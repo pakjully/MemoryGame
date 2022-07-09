@@ -29,15 +29,12 @@ let openCards = [];
 let matchedCards = [];
 const moveCounter = document.querySelector('.moves');
 let counter = 0;
-const minutes = document.querySelector('.minutes');
-const seconds = document.querySelector('.seconds');
-let totalSeconds = 0;
-let totalMinutes = 0;
-let starterTime = 0;
+const timerStarter = document.querySelector('.timer');
 const restartButton = document.querySelector('.restart');
 const shuffledList = shuffle(cardList);
 let starRating = 0;
-
+let timerOn = false;
+const from = Date.now();
 
 function shuffle(array) {
     let currentIndex = array.length, temporaryValue, randomIndex;
@@ -72,16 +69,12 @@ function countMoves () {
     if (counter < 25) {
         starRating = 3;
     } else if  (counter === 25) {
-        if (stars[2].parentNode) {
-            stars[2].parentNode.removeChild(stars[2]);
-            starRating = 2;
-        }
+        stars[0].remove();
+        starRating = 2;
     }
     else if (counter === 40) {
-        if (stars[1].parentNode) {
-            stars[1].parentNode.removeChild(stars[1]);
-            starRating = 1;
-        }
+        stars[0].remove();
+        starRating = 1;
     }
 }
 
@@ -100,15 +93,17 @@ cardList.forEach((card) => card.addEventListener ('click', function () {
      // add the card to a *list* of "open" cards:
     openCards.push(card);
      // if the list already has another card, check to see if the two cards match:
+     const firstCard = openCards[0];
+     const secondCard = openCards[1];
     if (openCards.length === 2) {
-        if (openCards[0].innerHTML === openCards[1].innerHTML) {
-            matchCards (openCards[0], openCards[1]);
-            matchedCards.push(openCards[0],openCards[1]);
+        if (firstCard.innerHTML === secondCard.innerHTML) {
+            matchCards (firstCard, secondCard);
+            matchedCards.push(firstCard,secondCard);
             openCards = [];
     // if the cards do not match, remove the cards from the list and hide the card's symbol:
         } else {
-            hideCard(openCards[0]);
-            hideCard(openCards[1]);
+            hideCard(firstCard);
+            hideCard(secondCard);
             openCards = [];
         }
     }
@@ -139,18 +134,35 @@ function clearCard (card) {
 }
 
 function setTimer () {
-    seconds.innerHTML = totalSeconds;
-    minutes.innerHTML = totalMinutes;
-    totalSeconds++;
-    if (totalSeconds === 60) {
-    totalMinutes++;
-    totalSeconds = 0;
-    }  else if (totalSeconds < 10) {
-        totalSeconds = '0'+ `${totalSeconds}`;
-    }
+    let to = Date.now();
+    const date = new Date(to - from).toLocaleTimeString('ru-RU',{ minute: '2-digit', second: '2-digit',
+    })
+    timerStarter.innerHTML = date;
+}
+let timer;
+
+// function runTimer () {
+//     clearInterval(timer);
+//     timer = setInterval(setTimer, 1000);
+// }
+// runTimer();
+const runTimer = () => {
+    const from = Date.now ();
+    clearInterval(timer);
+    timer = setInterval(setTimer(from), 1000)
 }
 
-const timer = setInterval(setTimer, 1000);
+
+function stopTimer () {
+    clearInterval(timer);
+}
+
+// function setTimer() {
+//      const to = Date.now();
+//      const time = Math.floor(to/1000);
+//      timerStarter.innerHTML = time;
+// }
+// let timer = setInterval(setTimer, 1000);
 
 function displayMessage () {
     alert(`You won! Congratulations! Time spent: ${totalMinutes}:${totalSeconds}; Moves made: ${counter}; Your rating is: ${starRating}`)
@@ -162,11 +174,11 @@ function restart () {
      matchedCards = [];
      moveCounter.innerHTML = 0;
      counter = 0;
-     totalSeconds = 0;
-     totalMinutes = 0;
-     minutes.innerHTML = 0;
-     seconds.innerHTML = 0;
      returnRating();
+     clearInterval(timer);
+     timerStarter.innerHTML = 0;
+     runTimer();
+
 }
 
 restartButton.addEventListener('click', function () {
