@@ -34,7 +34,9 @@ const restartButton = document.querySelector('.restart');
 const shuffledList = shuffle(cardList);
 let starRating = 0;
 let timerOn = false;
-const from = Date.now();
+
+let firstClick = true;
+let timer;
 
 function shuffle(array) {
     let currentIndex = array.length, temporaryValue, randomIndex;
@@ -85,7 +87,18 @@ function returnRating () {
 }
 
 // set up the event listener for a card. If a card is clicked:
-cardList.forEach((card) => card.addEventListener ('click', function () {
+cardList.forEach((card) => card.addEventListener ('click', function (event) {
+    // do not do anything if we clicked a card that was already opened
+    if (event.currentTarget.classList.contains('open')) {
+        return;
+    }
+
+    // run timer on first click
+    if (firstClick) {
+        runTimer();
+        firstClick = false;
+    }
+
     // increment the move counter and display it on the page
      countMoves();
     // display the card's symbol:
@@ -133,23 +146,18 @@ function clearCard (card) {
     card.classList.remove('open', 'match');
 }
 
-function setTimer () {
+function setTimer(from) {
     let to = Date.now();
-    const date = new Date(to - from).toLocaleTimeString('ru-RU',{ minute: '2-digit', second: '2-digit',
-    })
+    const date = new Date(to - from).toLocaleTimeString('ru-RU',{ minute: '2-digit', second: '2-digit' })
     timerStarter.innerHTML = date;
 }
-let timer;
 
-// function runTimer () {
-//     clearInterval(timer);
-//     timer = setInterval(setTimer, 1000);
-// }
-// runTimer();
 const runTimer = () => {
-    const from = Date.now ();
+    const from = Date.now();
     clearInterval(timer);
-    timer = setInterval(setTimer(from), 1000)
+    timer = setInterval(() => {
+        setTimer(from)
+    }, 1000)
 }
 
 
@@ -169,16 +177,15 @@ function displayMessage () {
 }
 
 function restart () {
-     makeBoard();
-     openCards = [];
-     matchedCards = [];
-     moveCounter.innerHTML = 0;
-     counter = 0;
-     returnRating();
-     clearInterval(timer);
-     timerStarter.innerHTML = 0;
-     runTimer();
-
+    firstClick = true;
+    makeBoard();
+    openCards = [];
+    matchedCards = [];
+    moveCounter.innerHTML = 0;
+    counter = 0;
+    returnRating();
+    clearInterval(timer);
+    timerStarter.innerHTML = 0;
 }
 
 restartButton.addEventListener('click', function () {
