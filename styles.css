@@ -26,6 +26,7 @@ body {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    position: relative;
 }
 
 h1 {
@@ -134,9 +135,9 @@ h1 {
     background-color: #aa7ecd;
 }
 
-.hidden {
+/* .hidden {
     display: none;
-}
+} */
 .heading {
     text-align: center;
 }
