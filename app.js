@@ -146,10 +146,10 @@ let timer;
 //     timer = setInterval(setTimer, 1000);
 // }
 // runTimer();
-const runTimer = () => {
+function runTimer() {
     const from = Date.now ();
     clearInterval(timer);
-    timer = setInterval(setTimer(from), 1000)
+    timer = setInterval(setTimer(), 1000)
 }
 
 
