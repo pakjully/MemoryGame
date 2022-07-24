@@ -105,6 +105,11 @@ h1 {
   color: grey;
 }
 
+.timer-box {
+    display: flex;
+    justify-content: center;
+    width: 70px;
+}
 
 .score-panel .stars li {
     list-style: none;
@@ -115,3 +120,27 @@ h1 {
     float: right;
     cursor: pointer;
 }
+
+/* Styles for win message */
+
+.win-message {
+    width: 400px;
+    height: 150px;
+    border: 1px solid #aa7ecd;
+    border-radius: 5%;
+    position: absolute;
+    top: 50%; left: 50%;
+    margin: -50px 0 0 -200px;
+    background-color: #aa7ecd;
+}
+
+.hidden {
+    display: none;
+}
+.heading {
+    text-align: center;
+}
+.info {
+    text-align: center;
+}
+

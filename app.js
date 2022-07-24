@@ -33,8 +33,11 @@ const timerStarter = document.querySelector('.timer');
 const restartButton = document.querySelector('.restart');
 const shuffledList = shuffle(cardList);
 let starRating = 0;
-let timerOn = false;
-const from = Date.now();
+let firstClick = true;
+const winMessage = document.querySelector('.win-message');
+const timeInfo = document.querySelector('.timeInfo');
+const movesInfo = document.querySelector('.movesInfo');
+const ratingInfo = document.querySelector('.ratingInfo');
 
 function shuffle(array) {
     let currentIndex = array.length, temporaryValue, randomIndex;
@@ -85,7 +88,16 @@ function returnRating () {
 }
 
 // set up the event listener for a card. If a card is clicked:
-cardList.forEach((card) => card.addEventListener ('click', function () {
+cardList.forEach((card) => card.addEventListener ('click', function (e) {
+    // start a timer when clicked first card
+    if (firstClick) {
+        runTimer();
+        firstClick = false;
+    }
+    // block open cards
+    if (e.currentTarget.classList.contains('open')) {
+        return;
+    }
     // increment the move counter and display it on the page
      countMoves();
     // display the card's symbol:
@@ -110,10 +122,10 @@ cardList.forEach((card) => card.addEventListener ('click', function () {
     if (matchedCards.length === 16) {
             clearTimeout(timer);
             setTimeout (() => {
+                showMessage();
                 displayMessage();
             }, 500);
         }
-
     }));
 
 function matchCards (card1, card2) {
@@ -133,7 +145,7 @@ function clearCard (card) {
     card.classList.remove('open', 'match');
 }
 
-function setTimer () {
+function setTimer (from) {
     let to = Date.now();
     const date = new Date(to - from).toLocaleTimeString('ru-RU',{ minute: '2-digit', second: '2-digit',
     })
@@ -141,34 +153,33 @@ function setTimer () {
 }
 let timer;
 
-// function runTimer () {
-//     clearInterval(timer);
-//     timer = setInterval(setTimer, 1000);
-// }
-// runTimer();
+
 function runTimer() {
     const from = Date.now ();
     clearInterval(timer);
-    timer = setInterval(setTimer(), 1000)
+    timer = setInterval(() => setTimer(from), 1000)
 }
-
 
 function stopTimer () {
     clearInterval(timer);
 }
 
-// function setTimer() {
-//      const to = Date.now();
-//      const time = Math.floor(to/1000);
-//      timerStarter.innerHTML = time;
-// }
-// let timer = setInterval(setTimer, 1000);
-
 function displayMessage () {
-    alert(`You won! Congratulations! Time spent: ${totalMinutes}:${totalSeconds}; Moves made: ${counter}; Your rating is: ${starRating}`)
+    timeInfo.innerHTML = `${timerStarter.innerHTML}`;
+    movesInfo.innerHTML = `${counter}`;
+    ratingInfo.innerHTML = `${starRating}`;
 }
 
+function showMessage () {
+    winMessage.classList.remove('hidden');
+}
+
+ function hideMessage () {
+     winMessage.classList.add('hidden');
+ }
+
 function restart () {
+    firstClick = true;
      makeBoard();
      openCards = [];
      matchedCards = [];
@@ -176,12 +187,10 @@ function restart () {
      counter = 0;
      returnRating();
      clearInterval(timer);
-     timerStarter.innerHTML = 0;
-     runTimer();
-
+     timerStarter.innerHTML = '00:00';
+     hideMessage();
 }
 
 restartButton.addEventListener('click', function () {
     restart();
-
 })
